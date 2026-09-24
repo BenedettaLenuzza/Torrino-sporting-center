@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- SEO — keyword primaria di questa pagina: [eventi sportivi Roma] -->
+<title>Eventi — Open day, tornei e masterclass | Torrino Sporting Center</title>
+<meta name="description" content="Open day, tornei di tennis, masterclass e weekend wellness al centro sportivo di Roma Torrino. Date, orari, posti disponibili e iscrizione online.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#071428">
+<link rel="canonical" href="https://www.torrinosportingcenter.it/eventi.html">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="Torrino Sporting Center">
+<meta property="og:title" content="Eventi — Torrino Sporting Center">
+<meta property="og:description" content="Open day, tornei, masterclass e weekend wellness. Posti limitati, iscrizione online.">
+<meta property="og:url" content="https://www.torrinosportingcenter.it/eventi.html">
+<meta property="og:image" content="https://www.torrinosportingcenter.it/assets/images/event-01.svg">
+
+<link rel="icon" href="assets/icons/logoTorrino.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<a class="skip-link" href="#main">Salta al contenuto principale</a>
+<div data-layout="header"></div>
+
+<main id="main">
+  <section class="page-hero">
+    <div class="shell">
+      <nav class="crumbs" aria-label="Percorso di navigazione">
+        <a href="index.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">Eventi</span>
+      </nav>
+      <div class="page-hero__inner">
+        <div>
+          <p class="eyebrow">Eventi</p>
+          <h1>Il club<br>fuori orario.</h1>
+        </div>
+        <p class="page-hero__lead">
+          Open day, tornei, masterclass e weekend wellness. Posti limitati:
+          l'iscrizione si chiude al raggiungimento della capienza.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="events section">
+    <div class="shell">
+      <div class="events__layout">
+        <article class="event-featured reveal" id="event-featured"></article>
+        <div class="event-list" id="event-list"></div>
+      </div>
+
+      <!-- Form demo: nessun backend, nessun dato salvato -->
+      <div class="signup reveal" id="iscrizione">
+        <div class="signup__intro">
+          <p class="eyebrow">Iscrizione eventi</p>
+          <h2 class="display display--sm">Prendi il tuo posto.</h2>
+          <p class="u-muted">
+            Compila il modulo: la segreteria ti conferma la disponibilità via email entro 24 ore.
+          </p>
+          <ul class="signup__perks">
+            <li>Conferma entro 24 ore</li>
+            <li>Nessun costo di prenotazione</li>
+            <li>Disdetta fino a 48 ore prima</li>
+          </ul>
+        </div>
+
+        <form class="form signup__form" id="event-form" novalidate>
+          <div class="field">
+            <label for="f-nome">Nome</label>
+            <input type="text" id="f-nome" name="nome" autocomplete="given-name" required placeholder="Il tuo nome">
+            <p class="field__error" data-error-for="f-nome"></p>
+          </div>
+          <div class="field">
+            <label for="f-cognome">Cognome</label>
+            <input type="text" id="f-cognome" name="cognome" autocomplete="family-name" required placeholder="Il tuo cognome">
+            <p class="field__error" data-error-for="f-cognome"></p>
+          </div>
+          <div class="field">
+            <label for="f-email">Email</label>
+            <input type="email" id="f-email" name="email" autocomplete="email" required placeholder="nome@email.it">
+            <p class="field__error" data-error-for="f-email"></p>
+          </div>
+          <div class="field">
+            <label for="f-tel">Telefono</label>
+            <input type="tel" id="f-tel" name="telefono" autocomplete="tel" required placeholder="+39 333 000 0000">
+            <p class="field__error" data-error-for="f-tel"></p>
+          </div>
+          <div class="field field--wide">
+            <label for="f-evento">Evento</label>
+            <select id="f-evento" name="evento" required></select>
+            <p class="field__error" data-error-for="f-evento"></p>
+          </div>
+          <div class="field">
+            <label for="f-partecipanti">Numero partecipanti</label>
+            <input type="number" id="f-partecipanti" name="partecipanti" min="1" max="10" value="1" required>
+            <p class="field__error" data-error-for="f-partecipanti"></p>
+          </div>
+          <div class="field field--wide field--check">
+            <label class="check">
+              <input type="checkbox" id="f-privacy" name="privacy" required>
+              <span class="check__box" aria-hidden="true"></span>
+              <span>Ho letto e accetto la <a href="#privacy">privacy policy</a> e acconsento al trattamento dei dati.</span>
+            </label>
+            <p class="field__error" data-error-for="f-privacy"></p>
+          </div>
+          <div class="field field--wide form__actions">
+            <button class="btn btn--primary btn--lg" type="submit">Iscriviti</button>
+            <p class="form__status" id="event-form-status" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div data-layout="cta"></div>
+</main>
+
+<div data-layout="footer"></div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.torrinosportingcenter.it/" },
+    { "@type": "ListItem", "position": 2, "name": "Eventi", "item": "https://www.torrinosportingcenter.it/eventi.html" }
+  ]
+}
+</script>
+
+<script src="js/data.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
