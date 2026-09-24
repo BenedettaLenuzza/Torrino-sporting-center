@@ -97,7 +97,7 @@
   --accent-on-accent: var(--tiffany-700);
 
   /* Tipografia */
-  --font-display: 'Syne', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
 
   /* Scala tipografica fluida */
@@ -107,12 +107,13 @@
   --t-lg: clamp(1.1rem, 1rem + 0.45vw, 1.35rem);
   --t-xl: clamp(1.4rem, 1.15rem + 1.1vw, 2rem);
   --t-2xl: clamp(2rem, 1.4rem + 2.6vw, 3.4rem);
-  /* Syne è una display larga (~0.82em per carattere): le scale sono tarate
-     sulle righe più lunghe dei titoli di sezione. */
-  --t-3xl: clamp(2rem, 1.1rem + 2.9vw, 3.5rem);
-  /* La riga più lunga della hero ("COMMUNITY.") misura ~10.7em in Syne:
-     questo valore la mantiene entro la shell a qualsiasi larghezza. */
-  --t-4xl: min(8.1vw, 7.7rem);
+  /* Scale tarate sulle metriche di Archivo 800 (senza kerning, quindi per
+     eccesso): la riga più lunga dei titoli ("Il primo allenamento") misura
+     ~9.5em e resta nella shell anche a 390px. */
+  --t-3xl: clamp(2.2rem, 1.2rem + 3.4vw, 4.4rem);
+  /* La riga più lunga della hero ("COMMUNITY.") misura ~6.6em in Archivo:
+     il limite è l'altezza della hero, non la larghezza. */
+  --t-4xl: min(9.6vw, 9rem);
 
   /* Spaziature */
   --sp-1: 0.25rem;
@@ -256,11 +257,11 @@ ul, ol { list-style: none; padding: 0; }
   font-family: var(--font-display);
   font-weight: 800;
   font-size: var(--t-3xl);
-  line-height: 0.92;
-  letter-spacing: -0.035em;
+  line-height: 0.96;
+  letter-spacing: -0.025em;
 }
-.display--sm { font-size: var(--t-2xl); line-height: 0.98; }
-.display--xl { font-size: clamp(2rem, 5.6vw, 4.2rem); }
+.display--sm { font-size: var(--t-2xl); line-height: 1; }
+.display--xl { font-size: clamp(2.2rem, 5.8vw, 4.8rem); }
 
 h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; }
 
@@ -636,10 +637,10 @@ h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em
 
 .hero__title {
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 900;
   font-size: var(--t-4xl);
-  line-height: 0.86;
-  letter-spacing: -0.045em;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
   text-transform: uppercase;
   margin-bottom: var(--sp-5);
 }
@@ -802,8 +803,8 @@ h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em
   font-family: var(--font-display);
   font-weight: 800;
   font-size: var(--t-3xl);
-  line-height: 0.92;
-  letter-spacing: -0.035em;
+  line-height: 0.96;
+  letter-spacing: -0.025em;
   margin-top: var(--sp-4);
 }
 .page-hero__lead {
@@ -857,7 +858,7 @@ h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em
   margin-bottom: var(--sp-8);
 }
 .club__head .eyebrow { grid-column: 1 / -1; }
-.club__title { grid-column: 1 / 10; font-size: clamp(2rem, 4.7vw, 4.4rem); }
+.club__title { grid-column: 1 / 10; font-size: clamp(2.3rem, 6vw, 5.6rem); }
 .club__intro {
   grid-column: 7 / -1;
   display: grid;
@@ -930,7 +931,7 @@ h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em
   font-weight: 800;
   font-size: clamp(2.6rem, 5.5vw, 5rem);
   line-height: 0.85;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.025em;
   margin-bottom: var(--sp-3);
 }
 .stats__suffix { color: var(--accent-text); }
@@ -1318,7 +1319,7 @@ h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em
   font-size: clamp(1.9rem, 3.6vw, 3.2rem);
   font-weight: 800;
   line-height: 0.95;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.025em;
   margin-bottom: var(--sp-3);
 }
 .event-featured p {
@@ -1563,7 +1564,7 @@ h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em
   font-family: var(--font-display);
   font-weight: 800;
   font-size: var(--t-xl);
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   color: var(--accent-text);
 }
 .benefits h3 { font-size: var(--t-lg); margin-bottom: var(--sp-2); }

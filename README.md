@@ -223,8 +223,8 @@ e-commerce: il CTA punta a `merchStoreUrl`, da sostituire con l'URL dello shop.
   immersiva, il Bianco lo spazio editoriale, il Tiffany solo accent (CTA, hover, indicatori).
   Su bianco il testo accent usa `--tiffany-700` (contrasto AA); i componenti leggono sempre
   i token di superficie `--accent-text`, `--accent-line`, `--cta-*`, mai le scale direttamente.
-- **Tipografia**: Syne (display) + Inter (testo) da Google Fonts. Syne è una display molto
-  larga: le scale `--t-3xl`/`--t-4xl` sono tarate sulle righe più lunghe dei titoli, quindi
+- **Tipografia**: Archivo 800/900 (display) + Inter (testo) da Google Fonts. Archivo è una
+  grottesca solida e leggibile, d'impatto ma non futuristica: le scale `--t-3xl`/`--t-4xl` sono tarate sulle righe più lunghe dei titoli, quindi
   vanno riviste se si cambia font o copy dei titoli.
 - **Responsive**: breakpoint a 1280px (griglie editoriali), 1024px (navigazione hamburger,
   layout a colonna singola) e 720px (timetable a schede, chat full width). C'è anche una

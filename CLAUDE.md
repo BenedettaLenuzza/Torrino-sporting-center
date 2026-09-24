@@ -114,10 +114,12 @@ chatbot, che contengono HTML semplice (link) e arrivano da `TSC.api.askAssistant
 
 ## Trappole già incontrate
 
-- **Syne è una display molto larga** (~0.82em per carattere). Le scale `--t-3xl`,
-  `--t-4xl` e `.club__title` sono tarate misurando le righe più lunghe dei titoli
-  (`"COMMUNITY."` ≈ 10.7em, `"nella tua azienda."` ≈ 13.9em). Se si cambia font o copy
-  dei titoli, **rimisurare** con `Range.getBoundingClientRect()` invece di stimare.
+- **Display: Archivo 800/900** (hero in 900, maiuscolo). Le scale `--t-3xl`, `--t-4xl`,
+  `.display--xl` e `.club__title` sono tarate sulle righe più lunghe dei titoli
+  (`"COMMUNITY."` ≈ 6.6em, `"Il primo allenamento"` ≈ 9.5em): quest'ultima a 390px occupa
+  ~333px su 353 disponibili, quindi non alzare il minimo di `--t-3xl`. Se si cambia font o
+  copy dei titoli, **rimisurare** con `Range.getBoundingClientRect()` invece di stimare.
+  Archivo è già compatta: tracking dei titoli fra -0.025em e -0.035em, non oltre.
 - **`backdrop-filter` crea un containing block** per i discendenti `position: fixed`.
   Per questo `.site-header.is-nav-open` lo disattiva: senza, il menu mobile a tutto
   schermo viene ritagliato dentro l'header. Stessa attenzione con `transform` e `filter`.
