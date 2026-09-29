@@ -39,7 +39,9 @@
     return file && file.length ? file : 'index.html';
   };
 
-  const isActive = (href) => href.split('#')[0] === currentPage();
+  // Le pagine verticali non sono nel menu: si accende la voce "Attività".
+  const isActive = (href) =>
+    href.split('#')[0] === currentPage() || (Boolean(document.body.dataset.vertical) && href === routes.attivita);
 
   const LOGO = `<svg viewBox="0 0 40 40" fill="none"><path d="M20 2 4 11v18l16 9 16-9V11L20 2Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M13 26V14l7 6 7-6v12" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
@@ -53,6 +55,13 @@
      HEADER
   --------------------------------------------------------------------------- */
   function headerHTML() {
+    // Nelle pagine verticali (<body data-vertical="…">) la CTA dell'header apre
+    // il form lead della verticale invece di rimandare ai contatti.
+    const vertical = TSC.verticals && TSC.verticals[document.body.dataset.vertical];
+    const headerCta = vertical
+      ? `<button class="btn btn--primary btn--sm" type="button" data-lead-open="header">${esc(vertical.cta.short)}</button>`
+      : `<a class="btn btn--primary btn--sm" href="${routes.contatti}">Scopri il Club</a>`;
+
     const items = navigation
       .map(
         (item) =>
@@ -77,7 +86,7 @@
           </span>
           Area Clienti · Accedi
         </button>
-        <a class="btn btn--primary btn--sm" href="${routes.contatti}">Scopri il Club</a>
+        ${headerCta}
       </div>
     </nav>
 
@@ -92,6 +101,12 @@
      FOOTER
   --------------------------------------------------------------------------- */
   function footerHTML() {
+    // Una voce per pagina verticale: il footer è la mappa completa dei "mondi".
+    const worlds = Object.values(TSC.verticals || {})
+      .filter((v) => routes[v.id])
+      .map((v) => `<li><a href="${routes[v.id]}">${esc(v.name)}</a></li>`)
+      .join('');
+
     return `
 <footer class="site-footer" id="footer">
   <div class="shell">
@@ -104,20 +119,17 @@
 
       <nav class="site-footer__nav" aria-label="Link rapidi">
         <div>
+          <h3>Attività</h3>
+          <ul>${worlds}</ul>
+        </div>
+        <div>
           <h3>Il Club</h3>
           <ul>
             <li><a href="${routes.club}">Chi siamo</a></li>
-            <li><a href="${routes.attivita}">Attività</a></li>
             <li><a href="${routes.orari}">Orari corsi</a></li>
             <li><a href="${routes.eventi}">Eventi</a></li>
-          </ul>
-        </div>
-        <div>
-          <h3>Servizi</h3>
-          <ul>
             <li><a href="${routes.convenzioni}">Convenzioni aziendali</a></li>
             <li><a href="${routes.merch}">Merch</a></li>
-            <li><a href="${routes.iscrizione}">Iscrizione eventi</a></li>
             <li><a href="#" data-open-account>Area Clienti</a></li>
           </ul>
         </div>

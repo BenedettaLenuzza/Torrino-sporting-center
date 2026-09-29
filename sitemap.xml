@@ -17,6 +17,41 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.torrinosportingcenter.it/fitness.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.torrinosportingcenter.it/personal-training.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.torrinosportingcenter.it/nuoto.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.torrinosportingcenter.it/tennis.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.torrinosportingcenter.it/pilates-yoga.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.torrinosportingcenter.it/kids.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.torrinosportingcenter.it/wellness.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.torrinosportingcenter.it/eventi.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

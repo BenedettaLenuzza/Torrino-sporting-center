@@ -53,7 +53,40 @@ const SHOTS = [
   ['social-05', 'pearl', 900, 900, 'arc'],
   ['social-06', 'tiffany', 900, 900, 'sweep'],
   ['corporate', 'navy', 1600, 1100, 'grid'],
+  // Pagine verticali: hero, attrezzature (4:3) e ritratti staff (4:5)
+  ['personal-hero', 'pearl', 1200, 1400, 'sweep'],
+  ['personal-tech-01', 'tiffany', 1200, 900, 'grid'],
+  ['personal-tech-02', 'navy', 1200, 900, 'arc'],
+  ['personal-tech-03', 'night', 1200, 900, 'grid'],
+  ['personal-tech-04', 'pearl', 1200, 900, 'wave'],
+  ['personal-staff-01', 'navy', 1000, 1250, 'arc'],
+  ['personal-staff-02', 'pearl', 1000, 1250, 'sweep'],
+  ['personal-staff-03', 'night', 1000, 1250, 'arc'],
+  ['kids-hero', 'lagoon', 1200, 1400, 'wave'],
+  ['kids-tech-01', 'lagoon', 1200, 900, 'wave'],
+  ['kids-tech-02', 'tiffany', 1200, 900, 'grid'],
+  ['kids-tech-03', 'night', 1200, 900, 'arc'],
+  ['kids-tech-04', 'pearl', 1200, 900, 'sweep'],
+  ['kids-staff-01', 'tiffany', 1000, 1250, 'arc'],
+  ['kids-staff-02', 'lagoon', 1000, 1250, 'sweep'],
+  ['kids-staff-03', 'navy', 1000, 1250, 'arc'],
+  ...vertical('fitness', ['tiffany', 'navy', 'night', 'tiffany', 'pearl'], 'sweep'),
+  ...vertical('nuoto', ['lagoon', 'lagoon', 'tiffany', 'navy', 'night'], 'wave'),
+  ...vertical('tennis', ['tiffany', 'navy', 'pearl', 'night', 'tiffany'], 'grid'),
+  ...vertical('mindbody', ['pearl', 'lagoon', 'pearl', 'navy', 'tiffany'], 'arc'),
+  ...vertical('wellness', ['lagoon', 'night', 'lagoon', 'pearl', 'navy'], 'wave'),
 ];
+
+/** Set completo di una pagina verticale: hero, 4 attrezzature, 3 ritratti.
+ *  `tones` = [hero, tech-01..04]; i ritratti riusano i toni delle attrezzature. */
+function vertical(id, tones, kind) {
+  const kinds = ['grid', 'arc', 'sweep', 'wave'];
+  return [
+    [`${id}-hero`, tones[0], 1200, 1400, kind],
+    ...[1, 2, 3, 4].map((n) => [`${id}-tech-0${n}`, tones[n], 1200, 900, kinds[n - 1]]),
+    ...[1, 2, 3].map((n) => [`${id}-staff-0${n}`, tones[n], 1000, 1250, n === 2 ? 'sweep' : 'arc']),
+  ];
+}
 
 const rnd = (seed) => {
   let s = [...seed].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);

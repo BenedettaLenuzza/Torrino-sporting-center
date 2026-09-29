@@ -32,10 +32,40 @@
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]),
     );
 
+  /** Testo con evidenziatore: `*parola*` → .u-mark. L'escape avviene PRIMA. */
+  const rich = (str) => esc(str).replace(/\*(.+?)\*/g, '<span class="u-mark">$1</span>');
+
   /** Giorno corrente nel formato usato dai dati (settimana che inizia lunedì). */
   const todayName = () => TSC.days[(new Date().getDay() + 6) % 7];
 
+  /** Icona a tratto 24×24 nello stile del sito. */
+  const line = (paths) =>
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+
   const ICONS = {
+    // Icone delle pagine verticali (richiamate per nome da TSC.verticals)
+    loop: line('<path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7M20 4v4.7h-4.7M20 12a8 8 0 0 1-13.7 5.6L4 15.3M4 20v-4.7h4.7"/>'),
+    alert: line('<path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4.2M12 17v.1"/>'),
+    ruler: line('<rect x="2.5" y="8" width="19" height="8" rx="1.5"/><path d="M6.5 8v3M10.5 8v4.5M14.5 8v3M18.5 8v4.5"/>'),
+    clipboard: line('<rect x="5" y="4.5" width="14" height="16.5" rx="2.5"/><path d="M9 4.5V3h6v1.5M8.8 10h6.4M8.8 13.5h6.4M8.8 17h3.6"/>'),
+    users: line('<circle cx="9" cy="8.5" r="3.2"/><path d="M3.2 19.5a5.8 5.8 0 0 1 11.6 0M15.5 5.6a3 3 0 0 1 0 5.8M17.5 14.2a5.6 5.6 0 0 1 3.3 5.3"/>'),
+    chart: line('<path d="M3.5 20.5h17M6.5 17v-4M10.5 17V9M14.5 17v-6M18.5 17V5"/>'),
+    screen: line('<rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8.5 20h7M12 16.5V20"/>'),
+    heartLine: line('<path d="M12 20s-7.5-4.6-7.5-9.4A4.1 4.1 0 0 1 12 8.2a4.1 4.1 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20Z"/>'),
+    smile: line('<circle cx="12" cy="12" r="8.6"/><path d="M8.3 14a4.3 4.3 0 0 0 7.4 0M9 9.6v.2M15 9.6v.2"/>'),
+    compass: line('<circle cx="12" cy="12" r="8.6"/><path d="m15.4 8.6-2 4.8-4.8 2 2-4.8 4.8-2Z"/>'),
+    sprout: line('<path d="M12 20.5V11M12 11C12 7.4 9.4 5 5.4 5c0 3.8 2.6 6 6.6 6ZM12 13.5c0-3.3 2.4-5.6 6.4-5.6 0 3.6-2.4 5.6-6.4 5.6Z"/>'),
+    flame: line('<path d="M12 21a6.5 6.5 0 0 0 6.5-6.5c0-4.2-3.4-6.4-4.3-10.5C11.6 6 10 8.4 10 10.8 8.8 10.2 8.2 9 8.1 8 6.4 9.6 5.5 12 5.5 14.5A6.5 6.5 0 0 0 12 21Z"/>'),
+    battery: line('<rect x="2.5" y="7.5" width="17" height="9" rx="2"/><path d="M21.5 11v2M6 11v2"/>'),
+    target: line('<circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="4.8"/><circle cx="12" cy="12" r="1.2"/>'),
+    calendar: line('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M7.5 14h2M11 14h2M14.5 14h2M7.5 17.2h2"/>'),
+    drop: line('<path d="M12 3.2S5.5 10 5.5 14.5a6.5 6.5 0 0 0 13 0C18.5 10 12 3.2 12 3.2Z"/><path d="M9 15.2a3 3 0 0 0 2.6 2.6"/>'),
+    wind: line('<path d="M3 9h11.5a3 3 0 1 0-3-3M3 13h15.5a3 3 0 1 1-3 3M3 17h7"/>'),
+    moon: line('<path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1Z"/>'),
+    check: line('<path d="m5 12.5 4.2 4.2L19 7"/>'),
+    phone: line('<path d="M5 4.5h3.2l1.6 4-2 1.3a10 10 0 0 0 6.4 6.4l1.3-2 4 1.6V19a1.6 1.6 0 0 1-1.7 1.6A15.6 15.6 0 0 1 3.4 6.2 1.6 1.6 0 0 1 5 4.5Z"/>'),
+    chat: line('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5A8 8 0 1 1 21 12Z"/>'),
+
     instagram:
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>',
     facebook:
@@ -102,7 +132,7 @@
     });
 
     nav.addEventListener('click', (e) => {
-      if (e.target.closest('a')) closeNav();
+      if (e.target.closest('a, [data-lead-open]')) closeNav();
     });
 
     document.addEventListener('keydown', (e) => {
@@ -265,16 +295,15 @@
   }
 
   /* ===========================================================================
-     ATTIVITÀ — griglia asimmetrica + filtri per categoria
+     ATTIVITÀ — griglia asimmetrica delle discipline (orari.html)
+     Ogni scheda rimanda alla pagina verticale della disciplina, se esiste.
      ======================================================================== */
   async function initActivities() {
     const grid = $('#activity-grid');
-    const filterBar = $('#activity-filters');
-    const empty = $('#activity-empty');
     if (!grid) return;
 
     const all = await TSC.api.getActivities();
-    // In home la griglia è un teaser: `data-limit` taglia le schede mostrate.
+    // `data-limit` sulla griglia taglia le schede mostrate (versione teaser).
     const limit = parseInt(grid.dataset.limit, 10);
     const activities = Number.isFinite(limit) ? all.slice(0, limit) : all;
 
@@ -295,7 +324,11 @@
                 <li>${esc(a.duration)}</li>
                 <li>${esc(a.trainer)}</li>
               </ul>
-              <a class="activity__cta" href="${TSC.routes.orari}">Vedi gli orari ${ICONS.arrow}</a>
+              ${
+                a.vertical && TSC.routes[a.vertical]
+                  ? `<a class="activity__cta" href="${TSC.routes[a.vertical]}">Scopri il percorso ${ICONS.arrow}</a>`
+                  : `<a class="activity__cta" href="${TSC.routes.orari}">Vedi gli orari ${ICONS.arrow}</a>`
+              }
             </div>
           </div>
         </div>
@@ -304,31 +337,501 @@
       .join('');
 
     observeReveals(grid);
+  }
 
-    // Senza barra filtri (home) il modulo finisce qui.
-    if (!filterBar) return;
+  /* ===========================================================================
+     SCEGLI IL TUO MONDO — una scheda per pagina verticale (home + attivita.html)
+     Ogni scheda parte dal bisogno (`card.hook`) e porta alla pagina dedicata;
+     le discipline elencate sono le attività che puntano a quella verticale.
+     ======================================================================== */
+  async function initWorlds() {
+    const grid = $('#world-grid');
+    if (!grid) return;
 
-    const categories = ['Tutte', ...new Set(activities.map((a) => a.category))];
-    filterBar.innerHTML = categories
-      .map(
-        (c, i) =>
-          `<button class="filter" type="button" data-filter="${esc(c)}" aria-pressed="${i === 0}">${esc(c)}</button>`,
-      )
+    const [verticals, activities] = await Promise.all([TSC.api.getVerticals(), TSC.api.getActivities()]);
+
+    grid.innerHTML = verticals
+      .filter((v) => TSC.routes[v.id] && v.card)
+      .map((v, i) => {
+        const disciplines = activities.filter((a) => a.vertical === v.id).map((a) => a.name);
+        return `
+      <a class="world reveal" href="${TSC.routes[v.id]}" data-delay="${(i % 4) * 80}">
+        <div class="world__media"><img src="${esc(v.hero.img)}" alt="" width="1200" height="1400" loading="lazy"></div>
+        <div class="world__body">
+          <p class="world__tagline">${esc(v.card.tagline)}</p>
+          <h3 class="world__name">${esc(v.name)}</h3>
+          <p class="world__hook">${esc(v.card.hook)}</p>
+          ${
+            disciplines.length > 1
+              ? `<ul class="world__tags">${disciplines.map((d) => `<li>${esc(d)}</li>`).join('')}</ul>`
+              : ''
+          }
+          <span class="world__cta">Scopri il percorso ${ICONS.arrow}</span>
+        </div>
+      </a>`;
+      })
       .join('');
 
-    filterBar.addEventListener('click', (e) => {
-      const btn = e.target.closest('.filter');
-      if (!btn) return;
-      $$('.filter', filterBar).forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    observeReveals(grid);
+  }
 
-      const value = btn.dataset.filter;
-      let visible = 0;
-      $$('.activity', grid).forEach((card) => {
-        const show = value === 'Tutte' || card.dataset.category === value;
-        card.classList.toggle('is-hidden', !show);
-        if (show) visible++;
+  /* ===========================================================================
+     PAGINE VERTICALI — percorso di comunicazione in 9 tappe (TSC.verticals)
+     La pagina dichiara <body data-vertical="id"> e <div id="vertical">: qui si
+     rendono tutte le sezioni, sempre nello stesso ordine. Le CTA portano
+     `data-lead-open="<sorgente>"`, così il lead registra da quale punto arriva.
+     ======================================================================== */
+  const currentVerticalId = () => document.body.dataset.vertical || '';
+
+  async function initVertical() {
+    const root = $('#vertical');
+    const id = currentVerticalId();
+    if (!root || !id) return;
+
+    const v = await TSC.api.getVertical(id);
+    if (!v) {
+      console.error(`[TSC] Verticale "${id}" non trovata in TSC.verticals.`);
+      return;
+    }
+    const { club, routes } = TSC;
+    const { hero, problem, solution, journey, stories, equipment, team, faq, final } = v;
+
+    const cta = (source) => `
+      <button class="btn btn--primary btn--lg v-cta" type="button" data-lead-open="${esc(source)}">
+        ${esc(v.cta.label)} <span class="btn__icon" aria-hidden="true">${ICONS.arrow}</span>
+      </button>`;
+
+    const head = (block, note = block.lead) => `
+      <div class="section__head">
+        <div>
+          <p class="eyebrow reveal">${esc(block.eyebrow)}</p>
+          <h2 class="display display--sm reveal" data-delay="60">${rich(block.title)}</h2>
+        </div>
+        ${note ? `<p class="section__note reveal" data-delay="120">${esc(note)}</p>` : ''}
+      </div>`;
+
+    const initials = (name) => esc(name.trim().charAt(0).toUpperCase());
+
+    root.innerHTML = `
+      <!-- 1. Problema + prima CTA -->
+      <section class="v-hero" id="v-hero">
+        <div class="shell v-hero__inner">
+          <div class="v-hero__copy">
+            <nav class="crumbs" aria-label="Percorso di navigazione">
+              <a href="${routes.home}">Home</a><span aria-hidden="true">/</span>
+              <a href="${routes.attivita}">Attività</a><span aria-hidden="true">/</span>
+              <span aria-current="page">${esc(v.name)}</span>
+            </nav>
+            ${
+              v.logo
+                ? `<img class="v-hero__logo" src="${esc(v.logo)}" alt="${esc(v.name)}" height="56">`
+                : `<p class="eyebrow">${esc(hero.eyebrow)}</p>`
+            }
+            <h1 class="v-hero__title">${rich(hero.title)}</h1>
+            <p class="v-hero__lead">${esc(hero.lead)}</p>
+            <div class="v-hero__actions">
+              ${cta('hero')}
+              <a class="btn btn--outline btn--lg" href="#v-percorso">Scopri il percorso</a>
+            </div>
+            <ul class="v-trust">
+              ${hero.trust.map((t) => `<li>${ICONS.check}${esc(t)}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="v-hero__visual">
+            <img src="${esc(hero.img)}" alt="${esc(hero.alt)}" width="1200" height="1400" fetchpriority="high">
+            <div class="v-proof surface-light">
+              <p class="v-proof__value">${esc(hero.proof.value)} <span>${esc(hero.proof.unit)}</span></p>
+              <p class="v-proof__label">${esc(hero.proof.label)}</p>
+              <ul>${hero.proof.points.map((p) => `<li>${ICONS.check}${esc(p)}</li>`).join('')}</ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Normalizzazione del problema -->
+      <section class="section section--light v-problem" id="v-problema">
+        <div class="shell">
+          ${head(problem)}
+          <div class="v-problem__grid">
+            <ul class="v-pains">
+              ${problem.pains
+                .map(
+                  (p, i) => `
+                <li class="v-pain reveal" data-delay="${i * 90}">
+                  <span class="v-icon">${ICONS[p.icon] || ICONS.check}</span>
+                  <h3>${esc(p.title)}</h3>
+                  <p>${esc(p.text)}</p>
+                </li>`,
+                )
+                .join('')}
+            </ul>
+            <aside class="v-stat reveal" data-delay="270">
+              <span class="v-stat__value">${esc(problem.stat.value)}</span>
+              <p>${esc(problem.stat.text)}</p>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. La soluzione -->
+      <section class="section section--light section--mist v-solution" id="v-soluzione">
+        <div class="shell v-solution__inner">
+          <div class="v-solution__copy">
+            <p class="eyebrow reveal">${esc(solution.eyebrow)}</p>
+            <h2 class="display display--sm reveal" data-delay="60">${rich(solution.title)}</h2>
+            <p class="v-solution__lead reveal" data-delay="120">${esc(solution.lead)}</p>
+            <div class="reveal" data-delay="180">${cta('soluzione')}</div>
+          </div>
+          <ul class="v-pillars">
+            ${solution.pillars
+              .map(
+                (p, i) => `
+              <li class="reveal" data-delay="${i * 80}">
+                <span class="v-icon">${ICONS[p.icon] || ICONS.check}</span>
+                <strong>${esc(p.title)}</strong>
+                <span>${esc(p.text)}</span>
+              </li>`,
+              )
+              .join('')}
+          </ul>
+        </div>
+      </section>
+
+      <!-- 4. Il percorso -->
+      <section class="section v-journey" id="v-percorso">
+        <div class="shell">
+          ${head(journey)}
+          <ol class="v-steps">
+            ${journey.steps
+              .map(
+                (s, i) => `
+              <li class="v-step reveal" data-delay="${i * 90}">
+                <span class="v-step__n">${i + 1}</span>
+                <p class="v-step__meta">${esc(s.meta)}</p>
+                <h3>${esc(s.title)}</h3>
+                <p>${esc(s.text)}</p>
+              </li>`,
+              )
+              .join('')}
+          </ol>
+        </div>
+      </section>
+
+      <!-- 5. Testimonianze -->
+      <section class="section section--light v-stories" id="v-storie">
+        <div class="shell">
+          ${head(stories)}
+          <div class="v-stories__grid">
+            ${stories.items
+              .map(
+                (s, i) => `
+              <figure class="v-story reveal" data-delay="${i * 90}">
+                <blockquote>${esc(s.quote)}</blockquote>
+                <figcaption>
+                  ${s.img ? `<img src="${esc(s.img)}" alt="" width="96" height="96" loading="lazy">` : `<span class="v-story__avatar" aria-hidden="true">${initials(s.name)}</span>`}
+                  <span><strong>${esc(s.name)}</strong>${esc(s.detail)}</span>
+                </figcaption>
+                <p class="v-story__result"><strong>${esc(s.result)}</strong> ${esc(s.resultLabel)}</p>
+              </figure>`,
+              )
+              .join('')}
+          </div>
+          <div class="section__cta reveal">
+            ${cta('storie')}
+            ${stories.note ? `<span class="u-muted u-small">${esc(stories.note)}</span>` : ''}
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Tecnologie e attrezzature -->
+      <section class="section section--light section--mist v-equipment" id="v-attrezzature">
+        <div class="shell">
+          ${head(equipment)}
+          <div class="v-equipment__grid">
+            ${equipment.items
+              .map(
+                (t, i) => `
+              <article class="v-tool reveal" data-delay="${i * 80}">
+                <div class="v-tool__media"><img src="${esc(t.img)}" alt="${esc(t.alt)}" width="1200" height="900" loading="lazy"></div>
+                <p class="v-tool__tag">${esc(t.tag)}</p>
+                <h3>${esc(t.name)}</h3>
+                <p>${esc(t.text)}</p>
+              </article>`,
+              )
+              .join('')}
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Competenze dello staff -->
+      <section class="section v-team" id="v-team">
+        <div class="shell">
+          ${head(team)}
+          <div class="v-team__grid">
+            ${team.members
+              .map(
+                (m, i) => `
+              <article class="v-member reveal" data-delay="${i * 90}">
+                <div class="v-member__media"><img src="${esc(m.img)}" alt="${esc(m.alt)}" width="1000" height="1250" loading="lazy"></div>
+                <p class="v-member__role">${esc(m.role)}</p>
+                <h3>${esc(m.name)}</h3>
+                <p>${esc(m.bio)}</p>
+                <ul class="v-member__creds">${m.creds.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>
+              </article>`,
+              )
+              .join('')}
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. FAQ -->
+      <section class="section section--light v-faq" id="v-faq">
+        <div class="shell v-faq__inner">
+          <div class="v-faq__head">
+            <p class="eyebrow reveal">${esc(faq.eyebrow)}</p>
+            <h2 class="display display--sm reveal" data-delay="60">${rich(faq.title)}</h2>
+            <p class="u-muted reveal" data-delay="120">
+              Non trovi la risposta? Chiedi all’assistente in basso a destra oppure chiama la segreteria al
+              <a class="v-faq__phone" href="tel:${esc(club.phoneHref)}">${esc(club.phone)}</a>.
+            </p>
+          </div>
+          <div class="v-faq__list">
+            ${faq.items
+              .map(
+                (f, i) => `
+              <details class="v-qa reveal" data-delay="${i * 50}">
+                <summary>${esc(f.q)}<span class="v-qa__plus" aria-hidden="true"></span></summary>
+                <p>${esc(f.a)}</p>
+              </details>`,
+              )
+              .join('')}
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. CTA finale -->
+      <section class="final section v-final" id="v-prenota">
+        <div class="shell v-final__inner">
+          <p class="eyebrow reveal">${esc(final.eyebrow)}</p>
+          <h2 class="display display--xl reveal" data-delay="60">${rich(final.title)}</h2>
+          <p class="final__lead reveal" data-delay="120">${esc(final.lead)}</p>
+          <div class="final__actions reveal" data-delay="180">
+            ${cta('finale')}
+            <a class="btn btn--outline btn--lg" href="tel:${esc(club.phoneHref)}"><span class="btn__icon" aria-hidden="true">${ICONS.phone}</span>${esc(club.phone)}</a>
+            <a class="btn btn--ghost btn--lg" href="${esc(club.whatsapp)}" target="_blank" rel="noopener noreferrer"><span class="btn__icon" aria-hidden="true">${ICONS.chat}</span>WhatsApp</a>
+          </div>
+          <ul class="v-trust reveal" data-delay="240">
+            ${hero.trust.map((t) => `<li>${ICONS.check}${esc(t)}</li>`).join('')}
+          </ul>
+        </div>
+      </section>`;
+
+    observeReveals(root);
+  }
+
+  /* ===========================================================================
+     LEAD — mini-quiz di qualificazione + contatti, aperto da ogni [data-lead-open]
+     Domande, profili e testi arrivano da TSC.verticals[id].lead; l'invio passa
+     da TSC.api.submitLead (oggi demo, domani CRM/webhook).
+     ======================================================================== */
+  async function initLeadModal() {
+    const id = currentVerticalId();
+    if (!id) return;
+    const v = await TSC.api.getVertical(id);
+    if (!v || !v.lead) return;
+    const cfg = v.lead;
+    const questions = cfg.questions || [];
+
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      `
+<div class="modal lead" id="lead-modal" hidden>
+  <div class="modal__backdrop" data-close-lead></div>
+  <div class="modal__dialog lead__dialog" role="dialog" aria-modal="true" aria-labelledby="lead-title">
+    <button class="modal__close" type="button" data-close-lead aria-label="Chiudi">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <p class="eyebrow" id="lead-title">${esc(cfg.title)}</p>
+    <div class="lead__progress" aria-hidden="true"><span id="lead-bar"></span></div>
+    <div class="lead__body" id="lead-body"></div>
+  </div>
+</div>`,
+    );
+
+    const modal = $('#lead-modal');
+    const body = $('#lead-body');
+    const bar = $('#lead-bar');
+    const state = { step: 0, answers: [], source: '' };
+    let lastFocused = null;
+
+    const profile = () => {
+      const key = state.answers[cfg.profileFrom || 0];
+      return (key && cfg.profiles && cfg.profiles[key]) || (cfg.profiles && cfg.profiles.default) || null;
+    };
+
+    const setProgress = (ratio) => { bar.style.width = `${Math.round(ratio * 100)}%`; };
+
+    const renderQuestion = () => {
+      const q = questions[state.step];
+      setProgress(state.step / (questions.length + 1));
+      body.innerHTML = `
+        ${state.step === 0 ? `<p class="lead__intro">${esc(cfg.intro)}</p>` : ''}
+        <p class="lead__count">Domanda ${state.step + 1} di ${questions.length}</p>
+        <h2 class="lead__q">${esc(q.q)}</h2>
+        <div class="lead__answers">
+          ${q.options.map((o, i) => `<button class="lead__answer" type="button" data-answer="${i}">${esc(o)}</button>`).join('')}
+        </div>
+        <div class="lead__nav">
+          ${state.step > 0 ? '<button class="btn btn--ghost btn--sm" type="button" data-lead-back>← Indietro</button>' : '<span></span>'}
+          <button class="btn btn--ghost btn--sm" type="button" data-lead-skip>Salta le domande</button>
+        </div>`;
+      $('.lead__answer', body).focus();
+    };
+
+    const renderForm = () => {
+      setProgress(questions.length / (questions.length + 1));
+      const p = state.answers.length ? profile() : null;
+      body.innerHTML = `
+        ${p ? `<div class="lead__profile"><strong>${esc(p.title)}</strong><p>${esc(p.text)}</p></div>` : ''}
+        <h2 class="lead__q">${esc(cfg.formTitle)}</h2>
+        <form class="form lead__form" id="lead-form" novalidate>
+          <div class="field">
+            <label for="l-nome">Nome</label>
+            <input id="l-nome" name="name" type="text" autocomplete="given-name" required>
+            <span class="field__error" data-error-for="l-nome"></span>
+          </div>
+          <div class="field">
+            <label for="l-tel">Telefono / WhatsApp</label>
+            <input id="l-tel" name="phone" type="tel" autocomplete="tel" inputmode="tel" required>
+            <span class="field__error" data-error-for="l-tel"></span>
+          </div>
+          <div class="field field--wide">
+            <label for="l-email">Email (facoltativa)</label>
+            <input id="l-email" name="email" type="email" autocomplete="email">
+            <span class="field__error" data-error-for="l-email"></span>
+          </div>
+          <div class="field field--wide">
+            <label class="check">
+              <input id="l-privacy" name="privacy" type="checkbox">
+              <span class="check__box" aria-hidden="true"></span>
+              <span>Ho letto l’<a href="#privacy">informativa privacy</a> e acconsento a essere ricontattato per questa richiesta.</span>
+            </label>
+            <span class="field__error" data-error-for="l-privacy"></span>
+          </div>
+          <div class="form__actions field--wide">
+            <button class="btn btn--primary btn--lg" type="submit">${esc(cfg.submit)}</button>
+            <p class="form__status" id="lead-status" role="status"></p>
+          </div>
+        </form>`;
+      $('#l-nome').focus();
+      $('#lead-form').addEventListener('submit', onSubmit);
+    };
+
+    const renderSuccess = (name) => {
+      setProgress(1);
+      body.innerHTML = `
+        <div class="lead__done">
+          <span class="v-icon v-icon--lg">${ICONS.check}</span>
+          <h2 class="lead__q">Richiesta ricevuta, ${esc(name)}!</h2>
+          <p class="u-muted">${esc(cfg.success)}</p>
+          <button class="btn btn--outline" type="button" data-close-lead>Torna alla pagina</button>
+        </div>`;
+      $('[data-close-lead]', body).focus();
+    };
+
+    const render = () => (state.step < questions.length ? renderQuestion() : renderForm());
+
+    const rules = {
+      'l-nome': (el) => (el.value.trim().length >= 2 ? '' : 'Inserisci il tuo nome.'),
+      'l-tel': (el) => (el.value.replace(/\D/g, '').length >= 8 ? '' : 'Controlla il numero: sembra incompleto.'),
+      'l-email': (el) => (!el.value.trim() || /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(el.value.trim()) ? '' : 'Email non valida.'),
+      'l-privacy': (el) => (el.checked ? '' : 'Per continuare serve il consenso privacy.'),
+    };
+
+    async function onSubmit(e) {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const status = $('#lead-status');
+      let firstInvalid = null;
+      Object.entries(rules).forEach(([fid, rule]) => {
+        const el = document.getElementById(fid);
+        const msg = rule(el);
+        $(`[data-error-for="${fid}"]`, form).textContent = msg;
+        if (el.type !== 'checkbox') el.setAttribute('aria-invalid', String(Boolean(msg)));
+        if (msg && !firstInvalid) firstInvalid = el;
       });
-      if (empty) empty.hidden = visible > 0;
+      if (firstInvalid) {
+        firstInvalid.focus();
+        return;
+      }
+
+      const btn = $('button[type="submit"]', form);
+      btn.classList.add('is-loading');
+      const data = Object.fromEntries(new FormData(form).entries());
+      const p = state.answers.length ? profile() : null;
+      try {
+        await TSC.api.submitLead({
+          vertical: v.id,
+          source: state.source,
+          profile: p ? p.title : '',
+          answers: state.answers.map((a, i) => ({ question: questions[i].q, answer: a })),
+          name: data.name.trim(),
+          phone: data.phone.trim(),
+          email: (data.email || '').trim(),
+          privacy: true,
+          page: window.location.pathname,
+        });
+        renderSuccess(data.name.trim());
+      } catch (err) {
+        console.error('[TSC] Invio lead fallito:', err);
+        status.textContent = 'Invio non riuscito. Riprova o scrivici su WhatsApp.';
+        status.className = 'form__status is-error';
+        btn.classList.remove('is-loading');
+      }
+    }
+
+    const open = (source) => {
+      lastFocused = document.activeElement;
+      Object.assign(state, { step: 0, answers: [], source });
+      modal.hidden = false;
+      document.body.classList.add('is-locked');
+      render();
+    };
+
+    const close = () => {
+      modal.hidden = true;
+      document.body.classList.remove('is-locked');
+      if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
+    };
+
+    document.addEventListener('click', (e) => {
+      const opener = e.target.closest('[data-lead-open]');
+      if (opener) {
+        e.preventDefault();
+        open(opener.dataset.leadOpen || 'cta');
+        return;
+      }
+      if (modal.hidden) return;
+      if (e.target.closest('[data-close-lead]')) return close();
+
+      const answer = e.target.closest('[data-answer]');
+      if (answer) {
+        state.answers[state.step] = questions[state.step].options[Number(answer.dataset.answer)];
+        state.step += 1;
+        render();
+      } else if (e.target.closest('[data-lead-back]')) {
+        state.step = Math.max(0, state.step - 1);
+        state.answers.length = state.step;
+        render();
+      } else if (e.target.closest('[data-lead-skip]')) {
+        state.answers = [];
+        state.step = questions.length;
+        render();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.hidden) close();
     });
   }
 
@@ -781,6 +1284,17 @@
     const closeBtn = $('#chat-close');
     if (!root || !fab || !panel || !log || !form || !input) return;
 
+    // Nelle pagine verticali l'assistente specializzato sostituisce nome,
+    // saluto e domande rapide; il resto del motore resta quello del club.
+    const vertical = TSC.verticals && TSC.verticals[currentVerticalId()];
+    const bot = { ...TSC.chatbot, ...((vertical && vertical.assistant) || {}) };
+    const context = vertical ? { vertical: vertical.id } : {};
+    if (vertical && vertical.assistant) {
+      $$('.chat__who strong, .chat__fab-label', root).forEach((n) => (n.textContent = bot.name));
+      panel.setAttribute('aria-label', bot.name);
+      fab.setAttribute('aria-label', `Apri la chat con ${bot.name}`);
+    }
+
     let greeted = false;
 
     const scrollToEnd = () => { log.scrollTop = log.scrollHeight; };
@@ -809,7 +1323,7 @@
       push(esc(text), 'user');
       const dots = typing();
       try {
-        const reply = await TSC.api.askAssistant(text);
+        const reply = await TSC.api.askAssistant(text, context);
         dots.remove();
         push(reply, 'bot');
       } catch (err) {
@@ -820,7 +1334,7 @@
     };
 
     if (quick) {
-      quick.innerHTML = TSC.chatbot.quickActions
+      quick.innerHTML = bot.quickActions
         .map((q) => `<button type="button">${esc(q)}</button>`)
         .join('');
       quick.addEventListener('click', (e) => {
@@ -833,10 +1347,10 @@
       panel.hidden = false;
       root.classList.add('is-open');
       fab.setAttribute('aria-expanded', 'true');
-      fab.setAttribute('aria-label', 'Chiudi la chat con la Segretaria Virtuale');
+      fab.setAttribute('aria-label', `Chiudi la chat con ${bot.name}`);
       if (!greeted) {
         greeted = true;
-        push(TSC.chatbot.greeting, 'bot');
+        push(esc(bot.greeting), 'bot');
       }
       setTimeout(() => input.focus(), 120);
     };
@@ -845,7 +1359,7 @@
       panel.hidden = true;
       root.classList.remove('is-open');
       fab.setAttribute('aria-expanded', 'false');
-      fab.setAttribute('aria-label', 'Apri la chat con la Segretaria Virtuale');
+      fab.setAttribute('aria-label', `Apri la chat con ${bot.name}`);
       fab.focus();
     };
 
@@ -908,6 +1422,9 @@
     initMotion,
     initStats,
     initActivities,
+    initWorlds,
+    initVertical,
+    initLeadModal,
     initSchedule,
     initEvents,
     initEventForm,
