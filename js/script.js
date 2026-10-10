@@ -193,7 +193,7 @@
   }
 
   /* ===========================================================================
-     PARALLAX & TILT — micro-interazioni, disattivate se reduced motion o touch
+     PARALLAX — sfondo della hero, disattivato con reduced motion
      ======================================================================== */
   function initMotion() {
     if (prefersReducedMotion()) return;
@@ -222,23 +222,6 @@
       );
       update();
     }
-
-    // Tilt: l'elemento segue leggermente il puntatore (solo mouse)
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    $$('[data-tilt]').forEach((el) => {
-      el.style.transition = 'transform 0.5s cubic-bezier(0.16,1,0.3,1)';
-      el.addEventListener('pointermove', (e) => {
-        const r = el.getBoundingClientRect();
-        const px = (e.clientX - r.left) / r.width - 0.5;
-        const py = (e.clientY - r.top) / r.height - 0.5;
-        el.style.transition = 'transform 0.18s linear';
-        el.style.transform = `perspective(900px) rotateX(${(-py * 4).toFixed(2)}deg) rotateY(${(px * 4).toFixed(2)}deg) translateY(-4px)`;
-      });
-      el.addEventListener('pointerleave', () => {
-        el.style.transition = 'transform 0.6s cubic-bezier(0.16,1,0.3,1)';
-        el.style.transform = '';
-      });
-    });
   }
 
   /* ===========================================================================

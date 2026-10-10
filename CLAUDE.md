@@ -23,17 +23,6 @@ ricaricare con **Ctrl+F5**, oppure aggiungere un query string all'URL. Vale anch
 le pagine caricate in un iframe di test: il query string sull'iframe non invalida la
 cache di `js/*.js`.
 
-## Mappa dei file
-
-```text
-index.html                          home (teaser di ogni sezione)
-il-club.html  attivita.html  orari.html  eventi.html
-convenzioni.html  merch.html  contatti.html
-css/style.css     js/data.js    js/layout.js    js/script.js
-assets/images/    tools/generate-placeholders.mjs
-robots.txt        sitemap.xml
-```
-
 ## Architettura
 
 Quattro livelli separati, da rispettare quando si aggiunge una feature:
@@ -84,6 +73,12 @@ Dopo l'header ogni pagina interna apre con `.page-hero`, che contiene il breadcr
 (`.crumbs`), l'eyebrow, l'unico `<h1>` e un lead. È il sostituto compatto della hero
 cinematografica, che resta esclusiva della home.
 
+Le intestazioni a due voci (`.page-hero__inner`, `.section__head`, `.club__head`) stanno
+su una griglia a 12 colonne con passo `--grid-gap`: titolo nelle colonne 1-7, testo nelle
+8-12; `.section__head` assegna le colonne al **primo e all'ultimo figlio**, quindi va
+tenuto a due figli. Gallerie e righe di numeri riusano lo stesso passo perché i bordi
+coincidano; sotto i 1280px tutto passa a colonna singola.
+
 ### Regola non negoziabile: nessun dato hardcoded nella UI
 
 Orari, eventi, attività, contatti e risposte del chatbot vanno letti da `TSC`.
@@ -106,6 +101,16 @@ testo accent deve essere `--tiffany-700` (il Tiffany pieno su bianco ha contrast
 I token `--cta-*` fanno sì che la CTA primaria sia Tiffany su navy e navy su bianco; un
 blocco navy dentro una sezione chiara (`.corporate__cta`) deve ridichiararli.
 
+### Linguaggio visivo: sobrietà
+
+Forme e movimento sono volutamente asciutti (revisione con la skill `ui-ux-pro-max`):
+raggi solo da token (`--r-control` per bottoni, filtri, campi e chip; `--r-pill` solo per
+punti, barre e avatar), ombre solo `--shadow-sm|md|lg` e mai colorate, hover dei controlli
+= cambio di colore senza sollevamenti o scale (zoom delle foto max `1.03`), sezioni a filo
+senza raccordi arrotondati. Niente tilt, grana o animazioni infinite decorative: il
+`.pulse` indica solo uno stato live (chat online). Tutto ciò che si rivela all'hover deve
+restare visibile con `(hover: none), (pointer: coarse)`.
+
 ### Sicurezza del rendering
 
 Tutta la UI è costruita con `innerHTML` da template string: ogni valore proveniente dai
@@ -115,7 +120,7 @@ chatbot, che contengono HTML semplice (link) e arrivano da `TSC.api.askAssistant
 ## Trappole già incontrate
 
 - **Display: Archivo 800/900** (hero in 900, maiuscolo). Le scale `--t-3xl`, `--t-4xl`,
-  `.display--xl` e `.club__title` sono tarate sulle righe più lunghe dei titoli
+  e `.display--xl` sono tarate sulle righe più lunghe dei titoli
   (`"COMMUNITY."` ≈ 6.6em, `"Il primo allenamento"` ≈ 9.5em): quest'ultima a 390px occupa
   ~333px su 353 disponibili, quindi non alzare il minimo di `--t-3xl`. Se si cambia font o
   copy dei titoli, **rimisurare** con `Range.getBoundingClientRect()` invece di stimare.
