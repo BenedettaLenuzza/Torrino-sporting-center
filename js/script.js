@@ -32,6 +32,48 @@
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]),
     );
 
+  /** Link wa.me con il messaggio già scritto nella chat. */
+  const whatsappHref = (text) => `${TSC.club.whatsapp}?text=${encodeURIComponent(text)}`;
+
+  /**
+   * Telefono in formato internazionale E.164. Senza prefisso si assume l'Italia
+   * (+39); restituisce '' se il numero non è valido. Deve restare identica a
+   * normalizePhone in functions/api/lead.js, che rifà lo stesso controllo.
+   */
+  const normalizePhone = (raw) => {
+    let s = String(raw || '').trim().replace(/[\s.\-()/]/g, '');
+    if (s.startsWith('00')) s = `+${s.slice(2)}`;
+    if (!s.startsWith('+')) s = /^39\d{9,}$/.test(s) ? `+${s}` : `+39${s}`;
+    if (!/^\+[1-9]\d{6,14}$/.test(s)) return '';
+    if (s.startsWith('+39') && !/^\+39\d{6,11}$/.test(s)) return '';
+    return s;
+  };
+  const PHONE_ERROR = 'Numero non valido. Esempio: +39 333 123 4567 (il +39 lo aggiungiamo noi).';
+
+  /** Messaggio libero dei form: stesso limite di MAX_MESSAGE in functions/api/lead.js. */
+  const MAX_MESSAGE = 1000;
+  const messageRule = (v) => (v.trim().length <= MAX_MESSAGE ? '' : `Massimo ${MAX_MESSAGE} caratteri.`);
+
+  // Contatore "n / max" sotto ogni textarea con [data-count-for]: delegato, così
+  // vale anche per i form creati dopo (modale lead) e si azzera con form.reset().
+  const updateCounter = (el) => {
+    const hint = document.querySelector(`[data-count-for="${el.id}"]`);
+    if (hint) hint.textContent = `${el.value.length} / ${el.maxLength > 0 ? el.maxLength : MAX_MESSAGE}`;
+  };
+  document.addEventListener('input', (e) => {
+    if (e.target.matches && e.target.matches('textarea')) updateCounter(e.target);
+  });
+  document.addEventListener('reset', (e) => {
+    setTimeout(() => $$('textarea', e.target).forEach(updateCounter));
+  });
+
+  /** Campo trappola per i bot: invisibile, fuori dal tab e dagli screen reader. */
+  const honeypot = (id) => `
+    <div class="u-visually-hidden" aria-hidden="true">
+      <label for="${id}">Lascia vuoto questo campo</label>
+      <input id="${id}" name="website" type="text" tabindex="-1" autocomplete="off">
+    </div>`;
+
   /** Testo con evidenziatore: `*parola*` → .u-mark. L'escape avviene PRIMA. */
   const rich = (str) => esc(str).replace(/\*(.+?)\*/g, '<span class="u-mark">$1</span>');
 
@@ -601,7 +643,7 @@
           <div class="final__actions reveal" data-delay="180">
             ${cta('finale')}
             <a class="btn btn--outline btn--lg" href="tel:${esc(club.phoneHref)}"><span class="btn__icon" aria-hidden="true">${ICONS.phone}</span>${esc(club.phone)}</a>
-            <a class="btn btn--ghost btn--lg" href="${esc(club.whatsapp)}" target="_blank" rel="noopener noreferrer"><span class="btn__icon" aria-hidden="true">${ICONS.chat}</span>WhatsApp</a>
+            <a class="btn btn--ghost btn--lg" href="${esc(whatsappHref(club.whatsappText.vertical.replace('{attivita}', v.name)))}" target="_blank" rel="noopener noreferrer"><span class="btn__icon" aria-hidden="true">${ICONS.chat}</span>WhatsApp</a>
           </div>
           <ul class="v-trust reveal" data-delay="240">
             ${hero.trust.map((t) => `<li>${ICONS.check}${esc(t)}</li>`).join('')}
@@ -694,6 +736,12 @@
             <span class="field__error" data-error-for="l-email"></span>
           </div>
           <div class="field field--wide">
+            <label for="l-messaggio">Messaggio (facoltativo)</label>
+            <textarea id="l-messaggio" name="message" rows="3" maxlength="${MAX_MESSAGE}" placeholder="Raccontaci cosa cerchi o quando preferisci essere richiamato"></textarea>
+            <span class="field__hint" data-count-for="l-messaggio">0 / ${MAX_MESSAGE}</span>
+            <span class="field__error" data-error-for="l-messaggio"></span>
+          </div>
+          <div class="field field--wide">
             <label class="check">
               <input id="l-privacy" name="privacy" type="checkbox">
               <span class="check__box" aria-hidden="true"></span>
@@ -701,9 +749,10 @@
             </label>
             <span class="field__error" data-error-for="l-privacy"></span>
           </div>
+          ${honeypot('l-website')}
           <div class="form__actions field--wide">
             <button class="btn btn--primary btn--lg" type="submit">${esc(cfg.submit)}</button>
-            <p class="form__status" id="lead-status" role="status"></p>
+            <p class="form__status" id="lead-status" role="status" aria-live="polite"></p>
           </div>
         </form>`;
       $('#l-nome').focus();
@@ -726,7 +775,8 @@
 
     const rules = {
       'l-nome': (el) => (el.value.trim().length >= 2 ? '' : 'Inserisci il tuo nome.'),
-      'l-tel': (el) => (el.value.replace(/\D/g, '').length >= 8 ? '' : 'Controlla il numero: sembra incompleto.'),
+      'l-tel': (el) => (normalizePhone(el.value) ? '' : PHONE_ERROR),
+      'l-messaggio': (el) => messageRule(el.value),
       'l-email': (el) => (!el.value.trim() || /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(el.value.trim()) ? '' : 'Email non valida.'),
       'l-privacy': (el) => (el.checked ? '' : 'Per continuare serve il consenso privacy.'),
     };
@@ -749,7 +799,12 @@
       }
 
       const btn = $('button[type="submit"]', form);
+      const label = btn.textContent;
       btn.classList.add('is-loading');
+      btn.setAttribute('aria-busy', 'true');
+      btn.textContent = 'Invio in corso…';
+      status.textContent = '';
+      status.className = 'form__status';
       const data = Object.fromEntries(new FormData(form).entries());
       const p = state.answers.length ? profile() : null;
       try {
@@ -759,17 +814,22 @@
           profile: p ? p.title : '',
           answers: state.answers.map((a, i) => ({ question: questions[i].q, answer: a })),
           name: data.name.trim(),
-          phone: data.phone.trim(),
+          phone: normalizePhone(data.phone),
           email: (data.email || '').trim(),
+          message: (data.message || '').trim(),
           privacy: true,
-          page: window.location.pathname,
+          website: data.website || '',
         });
         renderSuccess(data.name.trim());
       } catch (err) {
         console.error('[TSC] Invio lead fallito:', err);
-        status.textContent = 'Invio non riuscito. Riprova o scrivici su WhatsApp.';
+        // Messaggio generico: i dettagli restano nei log del server. I dati
+        // restano compilati, così basta premere di nuovo il pulsante.
+        status.textContent = 'Non siamo riusciti a inviare la richiesta. Riprova tra poco o chiamaci.';
         status.className = 'form__status is-error';
         btn.classList.remove('is-loading');
+        btn.removeAttribute('aria-busy');
+        btn.textContent = label;
       }
     }
 
@@ -998,7 +1058,7 @@
   }
 
   /* ===========================================================================
-     FORM ISCRIZIONE — validazione client-side + submit demo (nessun backend)
+     FORM ISCRIZIONE — validazione client-side, invio al CRM via TSC.api
      ======================================================================== */
   function initEventForm() {
     const form = $('#event-form');
@@ -1009,7 +1069,8 @@
       'f-nome': (v) => (v.trim().length >= 2 ? '' : 'Inserisci il tuo nome.'),
       'f-cognome': (v) => (v.trim().length >= 2 ? '' : 'Inserisci il tuo cognome.'),
       'f-email': (v) => (/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v.trim()) ? '' : 'Inserisci un’email valida.'),
-      'f-tel': (v) => (v.replace(/\D/g, '').length >= 8 ? '' : 'Inserisci un numero di telefono valido.'),
+      'f-tel': (v) => (normalizePhone(v) ? '' : PHONE_ERROR),
+      'f-messaggio': (v) => messageRule(v),
       'f-evento': (v) => (v ? '' : 'Seleziona l’evento.'),
       'f-partecipanti': (v) => {
         const n = Number(v);
@@ -1053,11 +1114,13 @@
 
       const btn = $('button[type="submit"]', form);
       btn.classList.add('is-loading');
+      btn.setAttribute('aria-busy', 'true');
       btn.textContent = 'Invio in corso…';
       status.textContent = '';
       status.className = 'form__status';
 
       const payload = Object.fromEntries(new FormData(form).entries());
+      payload.telefono = normalizePhone(payload.telefono);
       try {
         const res = await TSC.api.submitEventSignup(payload);
         status.textContent = res.message;
@@ -1066,10 +1129,12 @@
         $$('[data-error-for]', form).forEach((n) => (n.textContent = ''));
       } catch (err) {
         console.error('[TSC] Invio iscrizione fallito:', err);
-        status.textContent = 'Invio non riuscito. Riprova o chiama la segreteria.';
+        // Messaggio generico; i dati restano nel form per un nuovo invio
+        status.textContent = 'Non siamo riusciti a inviare l’iscrizione. Riprova tra poco o chiama la segreteria.';
         status.className = 'form__status is-error';
       } finally {
         btn.classList.remove('is-loading');
+        btn.removeAttribute('aria-busy');
         btn.textContent = 'Iscriviti';
       }
     });
@@ -1230,6 +1295,8 @@
 
     const phoneBtn = $('#final-phone');
     if (phoneBtn) phoneBtn.setAttribute('href', `tel:${club.phoneHref}`);
+    const whatsappBtn = $('#final-whatsapp');
+    if (whatsappBtn) whatsappBtn.setAttribute('href', whatsappHref(club.whatsappText.visit));
 
     const footerContacts = $('#footer-contacts');
     if (footerContacts) {
@@ -1237,7 +1304,7 @@
         <li><a href="${esc(club.address.maps)}" target="_blank" rel="noopener noreferrer">${esc(club.address.street)}, ${esc(club.address.city)}</a></li>
         <li><a href="tel:${esc(club.phoneHref)}">${esc(club.phone)}</a></li>
         <li><a href="mailto:${esc(club.email)}">${esc(club.email)}</a></li>
-        <li><a href="${esc(club.whatsapp)}" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>`;
+        <li><a href="${esc(whatsappHref(club.whatsappText.info))}" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>`;
     }
 
     const footerOpening = $('#footer-opening');

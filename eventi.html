@@ -102,6 +102,12 @@
             <input type="number" id="f-partecipanti" name="partecipanti" min="1" max="10" value="1" required>
             <p class="field__error" data-error-for="f-partecipanti"></p>
           </div>
+          <div class="field field--wide">
+            <label for="f-messaggio">Messaggio (facoltativo)</label>
+            <textarea id="f-messaggio" name="messaggio" rows="4" maxlength="1000" placeholder="Domande, esigenze particolari, nomi degli altri partecipanti…"></textarea>
+            <span class="field__hint" data-count-for="f-messaggio">0 / 1000</span>
+            <p class="field__error" data-error-for="f-messaggio"></p>
+          </div>
           <div class="field field--wide field--check">
             <label class="check">
               <input type="checkbox" id="f-privacy" name="privacy" required>
@@ -109,6 +115,11 @@
               <span>Ho letto e accetto la <a href="#privacy">privacy policy</a> e acconsento al trattamento dei dati.</span>
             </label>
             <p class="field__error" data-error-for="f-privacy"></p>
+          </div>
+          <!-- Honeypot antispam: invisibile, un utente vero lo lascia vuoto -->
+          <div class="u-visually-hidden" aria-hidden="true">
+            <label for="f-website">Lascia vuoto questo campo</label>
+            <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
           </div>
           <div class="field field--wide form__actions">
             <button class="btn btn--primary btn--lg" type="submit">Iscriviti</button>

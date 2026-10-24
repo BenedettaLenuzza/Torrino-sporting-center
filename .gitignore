@@ -1,0 +1,13 @@
+# Segreti: token CRM e chiavi email. Mai nel repository.
+.env
+.env.*
+!.env.example
+.dev.vars*
+
+# Cloudflare / Node (sviluppo locale con wrangler)
+.wrangler/
+node_modules/
+
+# Impostazioni personali di Claude Code e backup locali
+.claude/settings.local.json
+*.doctor-bak

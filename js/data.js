@@ -78,7 +78,13 @@
     phone: '+39 06 0000 0000',
     phoneHref: '+390600000000',
     email: 'info@torrinosportingcenter.it',
-    whatsapp: 'https://wa.me/390600000000',
+    whatsapp: 'https://wa.me/393313402995',
+    // Messaggi già scritti nella chat WhatsApp; {attivita} = nome della pagina verticale.
+    whatsappText: {
+      visit: 'Ciao, vorrei prenotare una visita al Torrino Sporting Center.',
+      info: 'Ciao, vorrei qualche informazione sul Torrino Sporting Center.',
+      vertical: 'Ciao, vorrei informazioni su {attivita} al Torrino Sporting Center.',
+    },
     opening: [
       { days: 'Lunedì — Venerdì', hours: '06:30 — 23:00' },
       { days: 'Sabato', hours: '08:00 — 21:00' },
@@ -1479,7 +1485,7 @@
       'Eventi in programma',
     ],
     fallback:
-      'Su questo non ho ancora la risposta pronta. Scrivi a <a href="mailto:info@torrinosportingcenter.it">info@torrinosportingcenter.it</a> o chiama la segreteria: ti rispondiamo in giornata.',
+      `Su questo non ho ancora la risposta pronta. Scrivi a <a href="mailto:${club.email}">${club.email}</a> o chiama la segreteria: ti rispondiamo in giornata.`,
     intents: [
       {
         id: 'today',
@@ -1582,6 +1588,26 @@
   /* ---------------------------------------------------------------------------
      9. CONTRATTO DATI — punto unico di migrazione verso API/CMS/gestionale
   --------------------------------------------------------------------------- */
+  /* Endpoint serverless dei form (functions/api/lead.js su Cloudflare Pages):
+     il token del CRM sta solo lì. I nuovi tentativi li fa il server, non il browser:
+     un secondo invio dal client rischierebbe di duplicare la nota sul contatto. */
+  const LEAD_ENDPOINT = '/api/lead';
+
+  async function postLead(body) {
+    const res = await fetch(LEAD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...body, page: window.location.pathname }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      const err = new Error(`Invio lead non riuscito (HTTP ${res.status})`);
+      err.fields = data.errors || null;
+      throw err;
+    }
+    return data;
+  }
+
   const api = {
     getClub: async () => club,
     getActivities: async () => activities,
@@ -1593,11 +1619,27 @@
     getMerch: async () => merch,
     getFeed: async () => feed,
 
-    /** Iscrizione evento — demo frontend. Sostituire con POST verso il backend. */
+    /**
+     * Iscrizione evento → CRM via /api/lead (functions/api/lead.js).
+     * Payload: i campi del form #event-form (nome, cognome, email, telefono,
+     * evento, partecipanti, messaggio, privacy, website = honeypot).
+     */
     submitEventSignup: async (payload) => {
-      console.info('[TSC] Iscrizione evento (demo, nessun backend):', payload);
-      await new Promise((r) => setTimeout(r, 700));
-      return { ok: true, message: 'Iscrizione registrata. Ti contatteremo per la conferma.' };
+      const ev = events.find((e) => e.id === payload.evento);
+      await postLead({
+        form: 'event',
+        firstName: payload.nome,
+        lastName: payload.cognome,
+        email: payload.email,
+        phone: payload.telefono,
+        message: payload.messaggio || '',
+        privacy: payload.privacy === 'on' || payload.privacy === true,
+        interest: `evento-${payload.evento}`,
+        interestLabel: ev ? `${ev.title} — ${ev.dateLabel}` : payload.evento,
+        details: [{ label: 'Partecipanti', value: String(payload.partecipanti) }],
+        website: payload.website,
+      });
+      return { ok: true, message: 'Iscrizione inviata. La segreteria ti conferma il posto via email entro 24 ore.' };
     },
 
     /** Richiesta contatto — demo frontend. */
@@ -1608,13 +1650,28 @@
     },
 
     /**
-     * Lead dalle pagine verticali (quiz + contatti) — demo frontend.
-     * Punto di aggancio per CRM / webhook / gestionale. Payload:
-     *   { vertical, source, profile, answers: [{question, answer}], name, phone, email, privacy }
+     * Lead dalle pagine verticali (quiz + contatti) → CRM via /api/lead. Payload:
+     *   { vertical, source, profile, answers: [{question, answer}], name, phone, email, message, privacy, website }
+     * Il tag d'interesse usa l'id del verticale (stabile anche se cambia il nome).
      */
     submitLead: async (payload) => {
-      console.info('[TSC] Nuovo lead (demo, nessun backend):', payload);
-      await new Promise((r) => setTimeout(r, 700));
+      const v = verticals[payload.vertical];
+      await postLead({
+        form: 'lead',
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        message: payload.message || '',
+        privacy: payload.privacy === true,
+        interest: payload.vertical,
+        interestLabel: v ? v.name : payload.vertical,
+        details: [
+          ...(payload.profile ? [{ label: 'Profilo', value: payload.profile }] : []),
+          ...(payload.answers || []).map((a) => ({ label: a.question, value: a.answer })),
+          ...(payload.source ? [{ label: 'Pulsante', value: payload.source }] : []),
+        ],
+        website: payload.website,
+      });
       return { ok: true };
     },
 

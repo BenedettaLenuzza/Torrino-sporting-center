@@ -56,11 +56,11 @@
   --------------------------------------------------------------------------- */
   function headerHTML() {
     // Nelle pagine verticali (<body data-vertical="…">) la CTA dell'header apre
-    // il form lead della verticale invece di rimandare ai contatti.
+    // il form lead della verticale invece di rimandare alla pagina del club.
     const vertical = TSC.verticals && TSC.verticals[document.body.dataset.vertical];
     const headerCta = vertical
       ? `<button class="btn btn--primary btn--sm" type="button" data-lead-open="header">${esc(vertical.cta.short)}</button>`
-      : `<a class="btn btn--primary btn--sm" href="${routes.contatti}">Scopri il Club</a>`;
+      : `<a class="btn btn--primary btn--sm" href="${routes.club}">Scopri il Club</a>`;
 
     const items = navigation
       .map(
@@ -175,7 +175,7 @@
         e ti facciamo provare una classe a scelta. Senza impegno.
       </p>
       <div class="final__actions reveal" data-delay="180">
-        <a class="btn btn--primary btn--lg" href="${routes.iscrizione}">Prenota la visita</a>
+        <a class="btn btn--primary btn--lg" href="${routes.contatti}">Prenota la visita</a>
         <a class="btn btn--outline btn--lg" id="final-phone" href="#">Chiama la segreteria</a>
       </div>
     </div>
