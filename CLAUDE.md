@@ -10,11 +10,15 @@ nessuna dipendenza**. Contenuti, commenti e copy sono in italiano: mantenere la 
 
 ## Comandi
 
-Non esistono build, lint o test: il sito è statico e si serve così com'è.
+Non esistono build, lint o test: il sito è statico e si serve così com'è. L'unica parte
+server è la funzione dei form, che gira su Cloudflare Pages.
 
 ```bash
-python -m http.server 8000                      # server locale (consigliato)
+npx wrangler pages dev .                        # sito + /api/lead su :8788 (legge .env)
+python -m http.server 8000                      # solo statico: i form rispondono errore
+node tools/test-lead.mjs                        # test di /api/lead (scrive nel CRM vero)
 node --check js/data.js && node --check js/layout.js && node --check js/script.js
+node --check functions/api/lead.js
 node tools/generate-placeholders.mjs            # rigenera i placeholder SVG
 ```
 
@@ -111,6 +115,33 @@ senza raccordi arrotondati. Niente tilt, grana o animazioni infinite decorative:
 `.pulse` indica solo uno stato live (chat online). Tutto ciò che si rivela all'hover deve
 restare visibile con `(hover: none), (pointer: coarse)`.
 
+### Form → CRM (GoHighLevel white-label, API LeadConnector v2)
+
+`TSC.api.submitLead` (modale delle pagine verticali) e `submitEventSignup` (eventi)
+inviano a `/api/lead` = `functions/api/lead.js`, l'unico punto che conosce il token.
+Segreti solo in `.env` (locale, nel .gitignore) e nelle variabili di Cloudflare Pages:
+modello in `.env.example`. Le richieste vivono in **pipeline**: upsert del contatto
+(un'opportunità esiste solo legata a un `contactId`), poi in parallelo opportunità in
+`LC_PIPELINE_ID`/`LC_STAGE_ID` (se il contatto ne ha già una aperta lì non se ne crea
+un'altra), tag `sito-web` + `interesse-<id verticale | evento-<id>>` e una nota con
+messaggio, dettagli e consenso privacy (l'opportunità non ha un campo note nell'API). La
+card nasce con nome `<attività> - <prima riga del messaggio>` (solo l'attività se il
+messaggio è vuoto) e fonte `Sito web`: campi standard, nessun ID da configurare. Il
+messaggio va anche nel campo personalizzato dell'opportunità `LC_MESSAGE_FIELD_ID`
+("Additional Info" della card; su una card già aperta sostituisce il precedente). ID di
+pipeline, fasi e campi: `node tools/list-pipelines.mjs`. Su
+rete/429/5xx un solo nuovo tentativo lato server (mai dal browser: duplicherebbe la nota);
+se l'upsert fallisce comunque il lead va per email alla segreteria (Resend).
+
+- **Mai passare `tags` a `/contacts/upsert`**: sovrascrivono tutti i tag del contatto
+  esistente. I tag si aggiungono con `POST /contacts/:id/tags`.
+- Header `Version: v3` (verificato sulla documentazione a ottobre 2026; sovrascrivibile
+  con `LC_API_VERSION`).
+- `normalizePhone` e `MAX_MESSAGE` esistono due volte (`js/script.js` e la funzione) e
+  devono restare identici.
+- Entrambi i form hanno un honeypot `name="website"`: il server risponde 200 senza
+  scrivere nel CRM.
+
 ### Sicurezza del rendering
 
 Tutta la UI è costruita con `innerHTML` da template string: ogni valore proveniente dai
@@ -139,9 +170,9 @@ chatbot, che contengono HTML semplice (link) e arrivano da `TSC.api.askAssistant
 
 ## Ambito volutamente escluso
 
-Non implementare in questa fase, se non esplicitamente richiesto: backend, database,
-autenticazione, Area Clienti (solo modale "In arrivo"), pagamenti, e-commerce del merch
-(il CTA punta a `merchStoreUrl`). Il form eventi è demo frontend e logga su console.
+Non implementare in questa fase, se non esplicitamente richiesto: backend oltre alla
+funzione dei form, database, autenticazione, Area Clienti (solo modale "In arrivo"),
+pagamenti, e-commerce del merch (il CTA punta a `merchStoreUrl`).
 
 ## SEO
 
